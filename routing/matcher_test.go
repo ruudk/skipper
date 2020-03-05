@@ -839,6 +839,7 @@ func TestMakeLeafInvalidHeaderRegexp(t *testing.T) {
 
 func TestMakeLeaf(t *testing.T) {
 	const routeExp = `testRoute:
+        Weight(100) &&
         Method("PUT") &&
         Host("some-host") &&
         PathRegexp("some-path") &&
@@ -851,7 +852,7 @@ func TestMakeLeaf(t *testing.T) {
 	}
 
 	l, err := newLeaf(r, make(map[string]*regexp.Regexp))
-	if err != nil || l.method != "PUT" ||
+	if err != nil || l.weight != 100 || l.method != "PUT" ||
 		len(l.hostRxs) != 1 || len(l.pathRxs) != 1 ||
 		len(l.headersExact) != 1 || len(l.headersRegexp) != 1 ||
 		l.route.Backend != "https://example.org" {
@@ -965,6 +966,21 @@ func TestMatcherWithPathConflict(t *testing.T) {
 	r1, _ := m.match(&http.Request{URL: &url.URL{Path: "/api/a/name"}, Method: http.MethodPost})
 	if r1 == nil || r1.Route.Id != "testRoute1" {
 		t.Error("failed to match testRoute1")
+	}
+}
+
+func TestMatcherWithWeight(t *testing.T) {
+	rs, err := docToRoutes(`
+        testRoute0: Path("/test") && Weight(10) -> "https://example.org";
+        testRoute1: Path("/test") && Method("GET") && PathRegexp(".*") -> "https://example.org"`)
+	if err != nil {
+		t.Error(err)
+	}
+
+	m, _ := newMatcher(rs, MatchingOptionsNone)
+	r0, _ := m.match(&http.Request{URL: &url.URL{Path: "/test"}, Method: http.MethodGet})
+	if r0 == nil || r0.Route.Id != "testRoute0" {
+		t.Error("failed to match testRoute0")
 	}
 }
 

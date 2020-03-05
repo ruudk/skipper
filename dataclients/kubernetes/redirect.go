@@ -87,16 +87,8 @@ func initRedirectRoute(r *eskip.Route, code int) {
 	}
 	r.Headers[forwardedProtoHeader] = "http"
 
-	// the below duplicate any-path (.*) is set to make sure that
-	// the redirect route has a higher priority during matching than
-	// the normal routes that may have max 2 predicates: path regexp
-	// and host.
-	//
-	// A better solution might be to implement a Weight() predicate
-	// and apply it here.
-	//
-	r.PathRegexps = append(r.PathRegexps, ".*")
-	r.PathRegexps = append(r.PathRegexps, ".*")
+	// Give this route a higher weight so that it will get precedence over existing routes
+	r.Weight = 1000
 
 	r.Filters = append(r.Filters, &eskip.Filter{
 		Name: "redirectTo",
@@ -113,16 +105,8 @@ func initDisableRedirectRoute(r *eskip.Route) {
 	}
 	r.Headers[forwardedProtoHeader] = "http"
 
-	// the below duplicate any-path (.*) is set to make sure that
-	// the redirect route has a higher priority during matching than
-	// the normal routes that may have max 2 predicates: path regexp
-	// and host.
-	//
-	// A better solution might be to implement a Weight() predicate
-	// and apply it here.
-	//
-	r.PathRegexps = append(r.PathRegexps, ".*")
-	r.PathRegexps = append(r.PathRegexps, ".*")
+	// Give this route a higher weight so that it will get precedence over existing routes
+	r.Weight = 1000
 }
 
 func globalRedirectRoute(code int) *eskip.Route {
