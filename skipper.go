@@ -18,6 +18,7 @@ import (
 
 	"github.com/zalando/skipper/predicates/cron"
 	"github.com/zalando/skipper/predicates/primitive"
+	"github.com/zalando/skipper/predicates/weight"
 
 	ot "github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
@@ -1102,6 +1103,7 @@ func run(o Options, sig chan os.Signal, idleConnsCH chan struct{}) error {
 
 	// include bundled custom predicates
 	o.CustomPredicates = append(o.CustomPredicates,
+		weight.New(),
 		source.New(),
 		source.NewFromLast(),
 		interval.NewBetween(),

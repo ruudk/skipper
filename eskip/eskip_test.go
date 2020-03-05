@@ -59,7 +59,12 @@ func TestParseRouteExpression(t *testing.T) {
 	}, {
 		"weight predicate",
 		`Weight(50) -> "https://www.example.org"`,
-		&Route{Weight: 50, Backend: "https://www.example.org"},
+		&Route{
+			Predicates: []*Predicate{
+				{"Weight", []interface{}{float64(50)}},
+			},
+			Backend: "https://www.example.org",
+		},
 		false,
 	}, {
 		"method predicate",

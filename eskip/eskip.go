@@ -133,10 +133,6 @@ type Route struct {
 	// E.g. PathRegexp(/\/api\//)
 	PathRegexps []string
 
-	// Base weight of the route.
-	// E.g. Weight(50)
-	Weight int
-
 	// Method to match.
 	// E.g. Method("HEAD")
 	Method string
@@ -319,24 +315,6 @@ func getStringArgs(n int, args []interface{}) ([]string, error) {
 	return sargs, nil
 }
 
-// Expects exactly n arguments of type float64, or fails.
-func getFloat64Args(n int, args []interface{}) ([]float64, error) {
-	if len(args) != n {
-		return nil, invalidPredicateArgCountError
-	}
-
-	sargs := make([]float64, n)
-	for i, a := range args {
-		if sa, ok := a.(float64); ok {
-			sargs[i] = sa
-		} else {
-			return nil, invalidPredicateArgError
-		}
-	}
-
-	return sargs, nil
-}
-
 // Checks and sets the different predicates taken from the yacc result.
 // As the syntax is getting stabilized, this logic soon should be defined as
 // yacc rules. (https://github.com/zalando/skipper/issues/89)
@@ -346,7 +324,6 @@ func applyPredicates(route *Route, proute *parsedRoute) error {
 		args      []string
 		pathSet   bool
 		methodSet bool
-		weightSet bool
 	)
 
 	for _, m := range proute.matchers {
@@ -371,15 +348,6 @@ func applyPredicates(route *Route, proute *parsedRoute) error {
 		case "PathRegexp":
 			if args, err = getStringArgs(1, m.args); err == nil {
 				route.PathRegexps = append(route.PathRegexps, args[0])
-			}
-		case "Weight":
-			if weightSet {
-				return duplicateMethodPredicateError
-			}
-
-			if fargs, err := getFloat64Args(1, m.args); err == nil {
-				route.Weight = int(fargs[0])
-				weightSet = true
 			}
 		case "Method":
 			if methodSet {

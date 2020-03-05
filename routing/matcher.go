@@ -47,6 +47,7 @@ type leafMatchers []*leafMatcher
 func leafWeight(l *leafMatcher) int {
 	w := l.weight
 
+
 	if l.method != "" {
 		w++
 	}
@@ -133,6 +134,15 @@ func canonicalizeHeaderRegexps(hrx map[string][]*regexp.Regexp) map[string][]*re
 	}
 
 	return chrx
+}
+
+func extractWeight(r *Route) int {
+	//for _, p := range r.Predicates {
+	//	if w, ok := p.(weight.Predicate); ok {
+	// 		THIS IS IMPOSSIBLE >> import cycle not allowed
+	//	}
+	//}
+	return 0
 }
 
 // extracts the expected wildcard param names and returns them in reverse order
@@ -238,7 +248,7 @@ func newLeaf(r *Route, rxs map[string]*regexp.Regexp) (*leafMatcher, error) {
 		wildcardParamNames:   extractWildcardParamNames(r),
 		hasFreeWildcardParam: hasFreeWildcardParam(r),
 
-		weight:        r.Weight,
+		weight:        extractWeight(r),
 		method:        r.Method,
 		hostRxs:       hostRxs,
 		pathRxs:       pathRxs,
