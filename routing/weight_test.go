@@ -1,4 +1,4 @@
-package weight
+package routing
 
 import (
 	"bufio"

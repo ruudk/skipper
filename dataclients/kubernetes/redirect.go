@@ -7,7 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/zalando/skipper/eskip"
-	"github.com/zalando/skipper/predicates/weight"
+	"github.com/zalando/skipper/routing"
 )
 
 const (
@@ -90,7 +90,7 @@ func initRedirectRoute(r *eskip.Route, code int) {
 
 	// Give this route a higher weight so that it will get precedence over existing routes
 	r.Predicates = append([]*eskip.Predicate{{
-		Name: weight.Name,
+		Name: routing.WeightPredicateName,
 		Args: []interface{}{1000},
 	}}, r.Predicates...)
 
@@ -111,7 +111,7 @@ func initDisableRedirectRoute(r *eskip.Route) {
 
 	// Give this route a higher weight so that it will get precedence over existing routes
 	r.Predicates = append([]*eskip.Predicate{{
-		Name: weight.Name,
+		Name: routing.WeightPredicateName,
 		Args: []interface{}{1000},
 	}}, r.Predicates...)
 }

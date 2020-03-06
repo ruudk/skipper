@@ -248,7 +248,7 @@ func newLeaf(r *Route, rxs map[string]*regexp.Regexp) (*leafMatcher, error) {
 		wildcardParamNames:   extractWildcardParamNames(r),
 		hasFreeWildcardParam: hasFreeWildcardParam(r),
 
-		weight:        extractWeight(r),
+		weight:        r.weight,
 		method:        r.Method,
 		hostRxs:       hostRxs,
 		pathRxs:       pathRxs,
